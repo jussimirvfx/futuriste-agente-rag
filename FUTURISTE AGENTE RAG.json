@@ -343,20 +343,6 @@
     },
     {
       "parameters": {
-        "mode": "waitForAll"
-      },
-      "id": "e15fa981-8ced-4d86-bc1d-5808afe86f1a",
-      "name": "Aguardar APIs",
-      "type": "n8n-nodes-base.wait",
-      "typeVersion": 1,
-      "position": [
-        736,
-        -80
-      ],
-      "webhookId": "875ad9ee-9385-4d17-8ed6-17927b216ced"
-    },
-    {
-      "parameters": {
         "url": "https://api.awsli.com.br/v1/produto_preco",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth",
@@ -533,7 +519,7 @@
       "main": [
         [
           {
-            "node": "Aguardar APIs",
+            "node": "Combinar Produtos e Preços",
             "type": "main",
             "index": 0
           }
@@ -560,7 +546,7 @@
       "main": [
         [
           {
-            "node": "Aguardar APIs",
+            "node": "Combinar Produtos e Preços",
             "type": "main",
             "index": 0
           }
