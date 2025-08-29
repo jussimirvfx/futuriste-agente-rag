@@ -8,13 +8,13 @@
         "width": 3047,
         "color": 4
       },
-      "id": "f157ba5b-0c3b-428f-834c-053dfed20a4d",
+      "id": "6b76810f-3c4f-4c10-b385-6657a2aa6731",
       "name": "Sticky Note3",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        -368,
-        -224
+        -1744,
+        -112
       ]
     },
     {
@@ -22,13 +22,13 @@
         "batchSize": 10,
         "options": {}
       },
-      "id": "c5b4bdd0-7e48-434d-a2cc-f31d280520a4",
+      "id": "c694296d-7163-4f9a-bd76-fd5d11ba2702",
       "name": "Processar Produtos Individualmente",
       "type": "n8n-nodes-base.splitInBatches",
       "typeVersion": 3,
       "position": [
-        1344,
-        -80
+        48,
+        -16
       ]
     },
     {
@@ -36,50 +36,50 @@
         "rules": {
           "values": [
             {
-        "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "strict",
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
                   "version": 1
-          },
-          "conditions": [
-            {
+                },
+                "conditions": [
+                  {
                     "id": "1",
                     "leftValue": "={{ $json.acao }}",
                     "rightValue": "create",
-              "operator": {
+                    "operator": {
                       "type": "string",
                       "operation": "equals"
-              }
-            }
-          ],
-          "combinator": "and"
-        },
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
               "renameOutput": true,
               "outputKey": "create"
             },
             {
-        "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "strict",
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
                   "version": 1
-          },
-          "conditions": [
-            {
+                },
+                "conditions": [
+                  {
                     "id": "2",
                     "leftValue": "={{ $json.acao }}",
                     "rightValue": "update",
-              "operator": {
-                "type": "string",
+                    "operator": {
+                      "type": "string",
                       "operation": "equals"
-              }
-            }
-          ],
-          "combinator": "and"
-        },
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
               "renameOutput": true,
               "outputKey": "update"
             }
@@ -87,13 +87,13 @@
         },
         "options": {}
       },
-      "id": "1c285627-dd76-4f17-a83a-d0feefcb8172",
+      "id": "fc798968-5f30-4bf1-ab14-09ee8b579c89",
       "name": "Switch - Create vs Update",
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3,
       "position": [
-        1600,
-        -64
+        272,
+        48
       ]
     },
     {
@@ -187,13 +187,13 @@
           ]
         }
       },
-      "id": "3863cbe6-d48f-4aa2-aa86-421a289b2457",
+      "id": "f097d325-95ee-4720-b6f0-cfca15fedd3e",
       "name": "Baserow - UPDATE",
       "type": "n8n-nodes-base.baserow",
       "typeVersion": 1,
       "position": [
-        1904,
-        112
+        576,
+        224
       ],
       "alwaysOutputData": true,
       "credentials": {
@@ -289,13 +289,13 @@
           ]
         }
       },
-      "id": "0ee04386-6824-4abe-9c32-0e790c21d2e8",
+      "id": "0dc4f19f-0325-419d-8958-31c90b4d65ac",
       "name": "Baserow - CREATE",
       "type": "n8n-nodes-base.baserow",
       "typeVersion": 1,
       "position": [
-        1904,
-        -112
+        576,
+        0
       ],
       "alwaysOutputData": true,
       "credentials": {
@@ -307,18 +307,18 @@
     },
     {
       "parameters": {
-        "operation": "list",
         "databaseId": 267479,
         "tableId": 657363,
-        "options": {}
+        "limit": 5,
+        "additionalOptions": {}
       },
-      "id": "6110589d-7fb3-47a6-9df2-12c064835796",
+      "id": "9f93b155-8ccb-497e-88bb-dc8f38f23618",
       "name": "Baserow2",
       "type": "n8n-nodes-base.baserow",
       "typeVersion": 1,
       "position": [
-        560,
-        128
+        -336,
+        -96
       ],
       "alwaysOutputData": true,
       "credentials": {
@@ -330,64 +330,76 @@
     },
     {
       "parameters": {
-        "jsCode": "// Combinar dados de produtos e preços com SINCRONIZAÇÃO CORRIGIDA\n// Lógica: usar preços como referência e sincronizar com Baserow\nconsole.log('🔍 DEBUG - Iniciando sincronização com Baserow');\n\nlet produtos = [];\nlet precos = [];\nlet produtosComPreco = [];\nlet produtosExistentes = [];\n\ntry {\n  // PRIMEIRO: Acessar dados da API de Preços (nosso ponto de referência)\n  const dadosPrecos = $('Loja Integrada API - Preços').first().json.objects;\n  if (dadosPrecos && dadosPrecos.length > 0) {\n    console.log('💰 Preços encontrados:', dadosPrecos.length, 'itens');\n    precos = dadosPrecos;\n\n    // Extrair IDs dos produtos que têm preço\n    const idsProdutosComPreco = precos\n      .filter(preco => preco.cheio && parseFloat(preco.cheio) > 0)\n      .map(preco => {\n        const produtoUrl = preco.produto || '';\n        const produtoId = produtoUrl.split('/').pop();\n        return produtoId;\n      })\n      .filter(id => id); // Remove IDs vazios\n\n    console.log('🎯 Produtos com preço válido encontrados:', idsProdutosComPreco.length);\n    console.log('📋 IDs dos produtos com preço:', idsProdutosComPreco);\n\n    // SEGUNDO: Acessar dados da API de Produtos e filtrar apenas os que têm preço\n    const dadosProdutos = $('Loja Integrada API - Produtos').first().json.objects;\n    if (dadosProdutos && dadosProdutos.length > 0) {\n      console.log('📦 Produtos totais da API:', dadosProdutos.length, 'itens');\n\n      // Filtrar apenas produtos que têm preço\n      produtosComPreco = dadosProdutos.filter(produto => {\n        const produtoTemPreco = idsProdutosComPreco.includes(produto.id?.toString());\n        if (!produtoTemPreco) {\n          console.log(`⚠️ Produto ${produto.nome} (ID: ${produto.id}) não tem preço - IGNORADO`);\n        }\n        return produtoTemPreco;\n      });\n\n      console.log('✅ Produtos filtrados com preço:', produtosComPreco.length);\n      produtos = produtosComPreco;\n    } else {\n      console.log('⚠️ Nenhum produto encontrado na API de produtos');\n    }\n  } else {\n    console.log('⚠️ Nenhum preço encontrado - não há produtos para processar');\n  }\n\n  // TERCEIRO: Verificar produtos existentes no Baserow para sincronização\n  try {\n    const baserowResponse = $('Baserow2').first().json;\n    console.log('🔍 DEBUG - Resposta do Baserow2:', baserowResponse);\n    \n    // Verificar se a resposta tem a estrutura esperada\n    if (baserowResponse && baserowResponse.results && Array.isArray(baserowResponse.results)) {\n      produtosExistentes = baserowResponse.results;\n      console.log('📊 Produtos existentes no Baserow (results):', produtosExistentes.length);\n    } else if (baserowResponse && Array.isArray(baserowResponse)) {\n      produtosExistentes = baserowResponse;\n      console.log('📊 Produtos existentes no Baserow (formato direto):', produtosExistentes.length);\n    } else {\n      console.log('📊 Nenhum produto encontrado no Baserow - estrutura:', typeof baserowResponse);\n      console.log('📊 Conteúdo:', baserowResponse);\n    }\n  } catch (error) {\n    console.log('⚠️ Erro ao acessar produtos do Baserow:', error.message);\n    console.log('📊 Considerando que não há produtos existentes');\n  }\n\n} catch (error) {\n  console.log('❌ Erro ao acessar dados das APIs:', error.message);\n}\n\nconsole.log('✅ Produtos encontrados:', produtos.length);\nconsole.log('✅ Preços encontrados:', precos.length);\nconsole.log('📋 Lista de produtos:', produtos);\nconsole.log('💵 Lista de preços:', precos);\nconsole.log('🗄️ Produtos existentes no Baserow:', produtosExistentes.length);\n\n// Função para limpar HTML\nfunction limparHtml(html) {\n  if (!html || typeof html !== 'string') {\n    return '';\n  }\n  \n  // Remove todas as tags HTML\n  let textoLimpo = html.replace(/<[^>]*>/g, '');\n  \n  // Remove entidades HTML\n  textoLimpo = textoLimpo.replace(/&[^;]+;/g, ' ');\n  \n  // Remove espaços extras e quebras de linha\n  textoLimpo = textoLimpo.replace(/\\s+/g, ' ').trim();\n  \n  return textoLimpo;\n}\n\n// Função para formatar preço\nfunction formatarPreco(valor) {\n  if (!valor) return 'R$ 0,00';\n\n  const numero = parseFloat(valor);\n  if (isNaN(numero)) return 'R$ 0,00';\n\n  // Formatar como moeda brasileira\n  return new Intl.NumberFormat('pt-BR', {\n    style: 'currency',\n    currency: 'BRL'\n  }).format(numero);\n}\n\n// Função para encontrar preço do produto\nfunction encontrarPreco(produtoId, listaPrecos) {\n  console.log('🔍 Procurando preço para produto ID:', produtoId);\n  console.log('📋 Lista de preços disponível:', listaPrecos?.length || 0);\n\n  if (!produtoId || !listaPrecos || listaPrecos.length === 0) {\n    console.log('❌ Parâmetros inválidos ou lista vazia');\n    return null;\n  }\n\n  const produtoIdStr = produtoId.toString();\n  console.log('🔄 Procurando por ID string:', produtoIdStr);\n\n  const precoEncontrado = listaPrecos.find(preco => {\n    // Verificar se o preço tem referência ao produto\n    const precoProdutoUrl = preco.produto || '';\n    console.log('Preço atual - URL produto:', precoProdutoUrl);\n\n    const precoProdutoId = precoProdutoUrl.split('/').pop();\n    console.log('Preço atual - ID extraído:', precoProdutoId);\n\n    const match = precoProdutoId === produtoIdStr;\n    console.log('Comparação:', precoProdutoId, '===', produtoIdStr, '=', match);\n\n    return match;\n  });\n\n  console.log('Resultado da busca:', precoEncontrado ? 'Encontrado' : 'Não encontrado');\n  return precoEncontrado;\n}\n\n// SINCRONIZAÇÃO: Comparar produtos da API com Baserow\nconsole.log('🔄 Iniciando sincronização...');\n\n// Criar mapa de produtos existentes no Baserow por ID\nconst mapaProdutosBaserow = new Map();\nprodutosExistentes.forEach(produto => {\n  if (produto.id_produto_loja_integrada) {\n    mapaProdutosBaserow.set(produto.id_produto_loja_integrada.toString(), produto);\n    console.log(`🗂️ Mapeado produto existente: ID ${produto.id_produto_loja_integrada} -> Baserow ID ${produto.id}`);\n  }\n});\n\nconsole.log('🗂️ Mapa de produtos Baserow criado com', mapaProdutosBaserow.size, 'itens');\n\n// Preparar produtos para sincronização\nconst produtosParaSincronizar = [];\nlet produtosParaCreate = 0;\nlet produtosParaUpdate = 0;\n\n// Processar cada produto da API\nprodutos.forEach((produto, index) => {\n  console.log(`📦 Processando produto ${index + 1}/${produtos.length}:`, produto.nome, 'ID:', produto.id);\n\n  // Encontrar preço correspondente\n  const precoCorrespondente = encontrarPreco(produto.id, precos);\n  console.log(`💰 Preço encontrado para ${produto.nome}:`, precoCorrespondente ? 'SIM' : 'NÃO');\n\n  // Preparar dados do produto\n  const produtoFinal = {\n    // Dados do produto\n    id_produto_loja_integrada: produto.id,\n    nome: produto.nome,\n    titulo_produto: produto.nome,\n    apelido: produto.apelido,\n    sku: produto.sku,\n    descricao_completa: produto.descricao_completa,\n    descricao_produto: limparHtml(produto.descricao_completa), // HTML limpo\n    url_produto: produto.url || '',\n    url_video_youtube: produto.url_video_youtube || '',\n    gtin: produto.gtin || '',\n    mpn: produto.mpn || '',\n    ncm: produto.ncm || '',\n    id_externo: produto.id_externo || '',\n    ativo: produto.ativo,\n    bloqueado: produto.bloqueado,\n    removido: produto.removido,\n    tipo: produto.tipo || 'produto',\n\n    // Dados de preço (se encontrado)\n    preco_cheio: precoCorrespondente ? formatarPreco(precoCorrespondente.cheio) : 'R$ 0,00',\n    preco_promocional: precoCorrespondente && precoCorrespondente.promocional ? formatarPreco(precoCorrespondente.promocional) : null,\n    preco_custo: precoCorrespondente && precoCorrespondente.custo ? formatarPreco(precoCorrespondente.custo) : null,\n    sob_consulta: precoCorrespondente ? precoCorrespondente.sob_consulta : false,\n\n    // Metadados\n    data_sincronizacao: new Date().toISOString(),\n    fonte: 'loja_integrada'\n  };\n\n  // Verificar se produto já existe no Baserow\n  const produtoExistente = mapaProdutosBaserow.get(produto.id?.toString());\n  console.log(`🔍 Verificando se produto ID ${produto.id} existe no Baserow:`, produtoExistente ? 'SIM' : 'NÃO');\n\n  if (produtoExistente) {\n    // Produto existe - precisa de UPDATE\n    produtoFinal.acao = 'update';\n    produtoFinal.id_baserow = produtoExistente.id; // ID do registro no Baserow\n    produtosParaUpdate++;\n    console.log(`🔄 Produto ${produto.nome} - UPDATE (ID Baserow: ${produtoExistente.id})`);\n  } else {\n    // Produto não existe - precisa de CREATE\n    produtoFinal.acao = 'create';\n    produtosParaCreate++;\n    console.log(`➕ Produto ${produto.nome} - CREATE`);\n  }\n\n  produtosParaSincronizar.push(produtoFinal);\n});\n\nconsole.log('🎯 Sincronização preparada:');\nconsole.log('- Produtos para CREATE:', produtosParaCreate);\nconsole.log('- Produtos para UPDATE:', produtosParaUpdate);\nconsole.log('- Total para sincronizar:', produtosParaSincronizar.length);\n\nconsole.log('📊 Resumo geral:');\nconsole.log('- Produtos da API com preço:', produtos.length);\nconsole.log('- Preços encontrados:', precos.length);\nconsole.log('- Produtos existentes no Baserow:', produtosExistentes.length);\nconsole.log('- Produtos para CREATE:', produtosParaCreate);\nconsole.log('- Produtos para UPDATE:', produtosParaUpdate);\n\nconsole.log('📋 Primeiro produto para sincronizar:', produtosParaSincronizar[0]);\n\nreturn produtosParaSincronizar;"
+        "jsCode": "// Combinar dados PAGINADOS de produtos e preços com SINCRONIZAÇÃO CORRIGIDA\n// Lógica: usar preços como referência e sincronizar com Baserow\nconsole.log('🔍 DEBUG - Iniciando sincronização PAGINADA com Baserow');\n\nlet produtos = [];\nlet precos = [];\nlet produtosComPreco = [];\nlet produtosExistentes = [];\n\ntry {\n  // PRIMEIRO: Coletar TODOS os dados de preços de todas as páginas\n  const dadosPrecosPaginas = $('API Preços Paginado').all();\n  console.log('📄 Páginas de preços encontradas:', dadosPrecosPaginas.length);\n\n  // Combinar todos os preços de todas as páginas\n  let todosPrecos = [];\n  dadosPrecosPaginas.forEach((pagina, index) => {\n    if (pagina.json.objects && Array.isArray(pagina.json.objects)) {\n      console.log(`💰 Página ${index + 1} de preços: ${pagina.json.objects.length} itens`);\n      todosPrecos = todosPrecos.concat(pagina.json.objects);\n    }\n  });\n\n  if (todosPrecos.length > 0) {\n    console.log('💰 Preços totais encontrados:', todosPrecos.length, 'itens');\n    precos = todosPrecos;\n\n    // Extrair IDs dos produtos que têm preço\n    const idsProdutosComPreco = precos\n      .filter(preco => preco.cheio && parseFloat(preco.cheio) > 0)\n      .map(preco => {\n        const produtoUrl = preco.produto || '';\n        const produtoId = produtoUrl.split('/').pop();\n        return produtoId;\n      })\n      .filter(id => id); // Remove IDs vazios\n\n    console.log('🎯 Produtos com preço válido encontrados:', idsProdutosComPreco.length);\n\n    // SEGUNDO: Coletar TODOS os dados de produtos de todas as páginas\n    const dadosProdutosPaginas = $('API Produtos Paginado').all();\n    console.log('📦 Páginas de produtos encontradas:', dadosProdutosPaginas.length);\n\n    // Combinar todos os produtos de todas as páginas\n    let todosProdutos = [];\n    dadosProdutosPaginas.forEach((pagina, index) => {\n      if (pagina.json.objects && Array.isArray(pagina.json.objects)) {\n        console.log(`📦 Página ${index + 1} de produtos: ${pagina.json.objects.length} itens`);\n        todosProdutos = todosProdutos.concat(pagina.json.objects);\n      }\n    });\n\n    if (todosProdutos.length > 0) {\n      console.log('📦 Produtos totais da API:', todosProdutos.length, 'itens');\n\n      // Filtrar apenas produtos que têm preço\n      produtosComPreco = todosProdutos.filter(produto => {\n        const produtoTemPreco = idsProdutosComPreco.includes(produto.id?.toString());\n        if (!produtoTemPreco) {\n          console.log(`⚠️ Produto ${produto.nome} (ID: ${produto.id}) não tem preço - IGNORADO`);\n        }\n        return produtoTemPreco;\n      });\n\n      console.log('✅ Produtos filtrados com preço:', produtosComPreco.length);\n      produtos = produtosComPreco;\n    } else {\n      console.log('⚠️ Nenhum produto encontrado nas páginas da API');\n    }\n  } else {\n    console.log('⚠️ Nenhum preço encontrado - não há produtos para processar');\n    return []; // Retorna array vazio se não há preços\n  }\n\n  // TERCEIRO: Verificar produtos existentes no Baserow para sincronização\n  try {\n    // Acessar dados do Baserow2\n    const baserowNode = $('Baserow2').all();\n    console.log('🔍 Verificando dados do Baserow, total de nós:', baserowNode.length);\n    \n    if (baserowNode && baserowNode.length > 0) {\n      // Extrair os dados JSON de cada item\n      produtosExistentes = baserowNode.map(item => item.json);\n      console.log('📊 Produtos existentes no Baserow:', produtosExistentes.length);\n      \n      // Debug: Mostrar estrutura do primeiro produto se existir\n      if (produtosExistentes.length > 0) {\n        console.log('🔍 Estrutura do primeiro produto no Baserow:');\n        const primeiroProduto = produtosExistentes[0];\n        console.log('Campos disponíveis:', Object.keys(primeiroProduto));\n        console.log('ID Produto Loja Integrada:', primeiroProduto['ID Produto Loja Integrada']);\n        console.log('ID do registro (id):', primeiroProduto.id);\n      }\n    } else {\n      console.log('📊 Baserow vazio');\n      produtosExistentes = [];\n    }\n  } catch (error) {\n    console.log('📊 Erro ao acessar Baserow:', error.message);\n    produtosExistentes = [];\n  }\n\n} catch (error) {\n  console.log('❌ Erro geral:', error.message);\n  return []; // Retorna array vazio em caso de erro\n}\n\nconsole.log('\\n📊 RESUMO DOS DADOS:');\nconsole.log('✅ Produtos da API com preço:', produtos.length);\nconsole.log('💰 Preços encontrados:', precos.length);\nconsole.log('🗄️ Produtos existentes no Baserow:', produtosExistentes.length);\n\n// Se não há produtos para processar, retornar vazio\nif (produtos.length === 0) {\n  console.log('⚠️ Nenhum produto para processar!');\n  return [];\n}\n\n// Função para limpar HTML\nfunction limparHtml(html) {\n  if (!html || typeof html !== 'string') {\n    return '';\n  }\n  \n  // Remove todas as tags HTML\n  let textoLimpo = html.replace(/<[^>]*>/g, '');\n  \n  // Remove entidades HTML\n  textoLimpo = textoLimpo.replace(/&[^;]+;/g, ' ');\n  \n  // Remove espaços extras e quebras de linha\n  textoLimpo = textoLimpo.replace(/\\s+/g, ' ').trim();\n  \n  // Limitar o tamanho se muito grande\n  if (textoLimpo.length > 1000) {\n    textoLimpo = textoLimpo.substring(0, 997) + '...';\n  }\n  \n  return textoLimpo;\n}\n\n// Função para formatar preço\nfunction formatarPreco(valor) {\n  if (!valor) return 'R$ 0,00';\n\n  const numero = parseFloat(valor);\n  if (isNaN(numero)) return 'R$ 0,00';\n\n  // Formatar como moeda brasileira\n  return new Intl.NumberFormat('pt-BR', {\n    style: 'currency',\n    currency: 'BRL'\n  }).format(numero);\n}\n\n// Função para encontrar preço do produto\nfunction encontrarPreco(produtoId, listaPrecos) {\n  if (!produtoId || !listaPrecos || listaPrecos.length === 0) {\n    return null;\n  }\n\n  const produtoIdStr = produtoId.toString();\n  \n  const precoEncontrado = listaPrecos.find(preco => {\n    const precoProdutoUrl = preco.produto || '';\n    const precoProdutoId = precoProdutoUrl.split('/').pop();\n    return precoProdutoId === produtoIdStr;\n  });\n\n  return precoEncontrado;\n}\n\n// SINCRONIZAÇÃO: Comparar produtos da API com Baserow\nconsole.log('\\n🔄 INICIANDO PROCESSO DE SINCRONIZAÇÃO...\\n');\n\n// CORREÇÃO PRINCIPAL: Criar mapa usando os nomes corretos dos campos\nconst mapaProdutosBaserow = new Map();\n\nif (produtosExistentes.length > 0) {\n  produtosExistentes.forEach(produto => {\n    // O campo no Baserow está como \"ID Produto Loja Integrada\" (com espaços)\n    let idProdutoLojaIntegrada = null;\n    \n    // Tentar diferentes variações do nome do campo\n    if (produto['ID Produto Loja Integrada']) {\n      idProdutoLojaIntegrada = produto['ID Produto Loja Integrada'];\n    } else if (produto['id_produto_loja_integrada']) {\n      idProdutoLojaIntegrada = produto['id_produto_loja_integrada'];\n    } else if (produto['5391437']) {\n      // Tentar pelo ID do campo se estiver disponível\n      idProdutoLojaIntegrada = produto['5391437'];\n    }\n    \n    if (idProdutoLojaIntegrada) {\n      const idString = idProdutoLojaIntegrada.toString();\n      mapaProdutosBaserow.set(idString, produto);\n      console.log(`🗂️ Produto existente mapeado: ID ${idString} - ${produto['Nome'] || produto.nome || 'Sem nome'}`);\n    } else {\n      console.log('⚠️ Produto no Baserow sem ID da Loja Integrada:', JSON.stringify(produto));\n    }\n  });\n  console.log(`📌 Total de produtos mapeados do Baserow: ${mapaProdutosBaserow.size}`);\n  console.log('📌 IDs mapeados:', Array.from(mapaProdutosBaserow.keys()));\n} else {\n  console.log('📌 Baserow vazio - todos os produtos serão criados');\n}\n\n// Preparar produtos para sincronização\nconst produtosParaSincronizar = [];\nlet produtosParaCreate = 0;\nlet produtosParaUpdate = 0;\nlet produtosIgnorados = 0;\n\n// Processar cada produto da API\nprodutos.forEach((produto, index) => {\n  console.log(`\\n📦 [${index + 1}/${produtos.length}] Processando: ${produto.nome}`);\n  console.log(`   ID: ${produto.id} | SKU: ${produto.sku || 'N/A'}`);\n\n  // Encontrar preço correspondente\n  const precoCorrespondente = encontrarPreco(produto.id, precos);\n  \n  if (precoCorrespondente) {\n    console.log(`   💰 Preço: ${formatarPreco(precoCorrespondente.cheio)}`);\n  } else {\n    console.log(`   ⚠️ Sem preço encontrado`);\n  }\n\n  // Preparar dados do produto para o Baserow\n  const produtoFinal = {\n    // Identificador principal - USAR STRING\n    id_produto_loja_integrada: produto.id?.toString(),\n    \n    // Informações básicas\n    nome: produto.nome || '',\n    titulo_produto: produto.nome || '',\n    apelido: produto.apelido || '',\n    sku: produto.sku || '',\n    \n    // Descrições\n    descricao_completa: produto.descricao_completa || '',\n    descricao_produto: limparHtml(produto.descricao_completa),\n    \n    // URLs e mídia\n    url_produto: produto.url || '',\n    url_video_youtube: produto.url_video_youtube || '',\n    \n    // Códigos adicionais\n    gtin: produto.gtin || '',\n    mpn: produto.mpn || '',\n    ncm: produto.ncm || '',\n    id_externo: produto.id_externo || '',\n    \n    // Status\n    ativo: produto.ativo === true || produto.ativo === 'true' || produto.ativo === 1,\n    bloqueado: produto.bloqueado === true || produto.bloqueado === 'true' || produto.bloqueado === 1,\n    removido: produto.removido === true || produto.removido === 'true' || produto.removido === 1,\n    tipo: produto.tipo || 'produto',\n    \n    // Preços\n    preco_cheio: precoCorrespondente ? formatarPreco(precoCorrespondente.cheio) : 'R$ 0,00',\n    preco_promocional: precoCorrespondente && precoCorrespondente.promocional ? \n                       formatarPreco(precoCorrespondente.promocional) : '',\n    preco_custo: precoCorrespondente && precoCorrespondente.custo ? \n                 formatarPreco(precoCorrespondente.custo) : '',\n    sob_consulta: precoCorrespondente ? (precoCorrespondente.sob_consulta === true) : false,\n    \n    // Metadados\n    data_sincronizacao: new Date().toISOString(),\n    fonte: 'loja_integrada'\n  };\n\n  // VERIFICAÇÃO CORRETA: Verificar se produto já existe no Baserow\n  const idParaBusca = produto.id?.toString();\n  const produtoExistente = mapaProdutosBaserow.get(idParaBusca);\n  \n  console.log(`   🔍 Verificando existência no Baserow para ID ${idParaBusca}...`);\n  \n  if (produtoExistente) {\n    // Produto existe - UPDATE\n    produtoFinal.acao = 'update';\n    produtoFinal.id_baserow = produtoExistente.id; // ID do registro no Baserow\n    produtosParaUpdate++;\n    console.log(`   🔄 Ação: UPDATE (Baserow ID: ${produtoExistente.id})`);\n    console.log(`   📝 Produto já existe: ${produtoExistente['Nome'] || produtoExistente.nome}`);\n  } else {\n    // Produto não existe - CREATE\n    produtoFinal.acao = 'create';\n    produtosParaCreate++;\n    console.log(`   ✅ Ação: CREATE (Novo produto)`);\n  }\n\n  produtosParaSincronizar.push(produtoFinal);\n});\n\n// Resumo final\nconsole.log('\\n' + '='.repeat(60));\nconsole.log('📊 RESUMO DA SINCRONIZAÇÃO:');\nconsole.log('='.repeat(60));\nconsole.log(`✅ Produtos processados: ${produtosParaSincronizar.length}`);\nconsole.log(`➕ Produtos para CRIAR: ${produtosParaCreate}`);\nconsole.log(`🔄 Produtos para ATUALIZAR: ${produtosParaUpdate}`);\nif (produtosIgnorados > 0) {\n  console.log(`⏭️ Produtos ignorados: ${produtosIgnorados}`);\n}\nconsole.log('='.repeat(60));\n\n// Log do primeiro produto como exemplo\nif (produtosParaSincronizar.length > 0) {\n  console.log('\\n📋 Exemplo do primeiro produto a ser processado:');\n  const exemplo = produtosParaSincronizar[0];\n  console.log(`Nome: ${exemplo.nome}`);\n  console.log(`ID Loja Integrada: ${exemplo.id_produto_loja_integrada}`);\n  console.log(`SKU: ${exemplo.sku}`);\n  console.log(`Preço: ${exemplo.preco_cheio}`);\n  console.log(`Ação: ${exemplo.acao.toUpperCase()}`);\n  if (exemplo.id_baserow) {\n    console.log(`ID no Baserow: ${exemplo.id_baserow}`);\n  }\n}\n\n// Validação final\nif (produtosParaSincronizar.length === 0) {\n  console.log('\\n⚠️ ATENÇÃO: Nenhum produto para sincronizar!');\n  console.log('Verifique se:');\n  console.log('1. A API está retornando produtos');\n  console.log('2. Os produtos têm preços associados');\n  console.log('3. As conexões com as APIs estão funcionando');\n  return []; // Retorna array vazio\n}\n\n// IMPORTANTE: Retornar no formato correto para o n8n\n// Cada item precisa estar em um objeto separado para o n8n processar\nreturn produtosParaSincronizar.map(produto => {\n  return {\n    json: produto\n  };\n});"
       },
-      "id": "ff0d206c-8e91-4e91-b07b-e2777b3ec406",
+      "id": "496d9d72-bb55-4835-ae9c-234277649c19",
       "name": "Combinar Produtos e Preços",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1008,
-        -96
+        -128,
+        -80
       ]
     },
     {
       "parameters": {
-        "url": "https://api.awsli.com.br/v1/produto_preco",
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpHeaderAuth",
-        "sendQuery": true,
-        "queryParameters": {
-          "parameters": [
+        "rule": {
+          "interval": [
             {
-              "name": "limit",
-              "value": "100"
-            },
-            {
-              "name": "offset",
-              "value": "0"
+              "field": "seconds"
             }
           ]
-        },
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "Authorization",
-              "value": "chave_api 7b9d04db65e45dcbf8c3 aplicacao fc665b96-2434-4c05-92d1-91a595612d61"
-            },
-            {
-              "name": "Content-Type",
-              "value": "application/json"
-            }
-          ]
-        },
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -1584,
+        64
+      ],
+      "id": "7a366bbb-7211-4f21-8b6e-2aba08bf2ee0",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Gerar offsets para paginação (0, 100, 200, 300, 400...)\n// Estimativa: cliente tem ~400 produtos, então precisamos de 5 páginas\n\nconst offsets = [];\nconst limitePorPagina = 100;\nconst totalProdutosEstimado = 500; // Um pouco acima do estimado para garantir\n\nfor (let offset = 0; offset < totalProdutosEstimado; offset += limitePorPagina) {\n  offsets.push({\n    offset: offset,\n    limit: limitePorPagina\n  });\n}\n\nconsole.log(`📄 Gerando ${offsets.length} páginas de produtos/preços`);\noffsets.forEach((item, index) => {\n  console.log(`Página ${index + 1}: offset=${item.offset}, limit=${item.limit}`);\n});\n\n// Retornar no formato correto para o n8n\nreturn offsets.map(offset => ({\n  json: offset\n}));"
+      },
+      "id": "26b00265-9d90-4605-b87e-f89b1efbeb59",
+      "name": "Gerar Offsets",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1360,
+        64
+      ]
+    },
+    {
+      "parameters": {
         "options": {}
       },
-      "id": "f1965fc6-d7cc-4356-87e1-0b419ab925c3",
-      "name": "Loja Integrada API - Preços",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.1,
+      "id": "4c51ffe9-b68b-4dfa-b4c8-b1f5b11cd35b",
+      "name": "Iterar Produtos",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
       "position": [
-        288,
-        -80
+        -1168,
+        48
+      ]
+    },
+    {
+      "parameters": {
+        "amount": 2,
+        "unit": "seconds"
+      },
+      "id": "003d3a34-6f81-40af-8c06-1c41517c7ee2",
+      "name": "Delay Produtos",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [
+        -1008,
+        112
       ],
-      "credentials": {
-        "httpHeaderAuth": {
-          "id": "uKA8k5WPzNvodqZg",
-          "name": "Teste Jussi"
-        }
-      }
+      "webhookId": "8efb7f96-2c51-4789-85cd-a0ca73692848"
     },
     {
       "parameters": {
@@ -399,11 +411,11 @@
           "parameters": [
             {
               "name": "limit",
-              "value": "100"
+              "value": "={{ $json.limit }}"
             },
             {
               "name": "offset",
-              "value": "0"
+              "value": "={{ $json.offset }}"
             },
             {
               "name": "description_html",
@@ -426,13 +438,13 @@
         },
         "options": {}
       },
-      "id": "e8dddcfa-c13f-4966-89da-e5a5b3517281",
-      "name": "Loja Integrada API - Produtos",
+      "id": "c9cada43-124d-4df3-8129-fb607bf22c39",
+      "name": "API Produtos Paginado",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.1,
       "position": [
-        16,
-        -80
+        -864,
+        144
       ],
       "credentials": {
         "httpHeaderAuth": {
@@ -443,26 +455,196 @@
     },
     {
       "parameters": {
-        "rule": {
-          "interval": [
+        "options": {}
+      },
+      "id": "a0f72686-735d-4f3b-aa71-69873ccf13e7",
+      "name": "Iterar Preços",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -624,
+        16
+      ]
+    },
+    {
+      "parameters": {
+        "amount": 2,
+        "unit": "seconds"
+      },
+      "id": "acf8e001-c678-46a8-ae7b-3c29b5fe22fb",
+      "name": "Delay Preços",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [
+        -416,
+        96
+      ],
+      "webhookId": "9940ceb1-a57f-42eb-9e1e-ce9b4bfbb212"
+    },
+    {
+      "parameters": {
+        "url": "https://api.awsli.com.br/v1/produto_preco",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
             {
-              "field": "seconds"
+              "name": "limit",
+              "value": "={{ $json.limit }}"
+            },
+            {
+              "name": "offset",
+              "value": "={{ $json.offset }}"
             }
           ]
-        }
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "chave_api 7b9d04db65e45dcbf8c3 aplicacao fc665b96-2434-4c05-92d1-91a595612d61"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {}
       },
-      "type": "n8n-nodes-base.scheduleTrigger",
-      "typeVersion": 1.2,
+      "id": "5cb84374-0510-4ee8-afda-7dfedec74cc7",
+      "name": "API Preços Paginado",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
       "position": [
-        -208,
-        -48
+        -256,
+        144
       ],
-      "id": "e8421b1c-3cc5-42de-ba83-908786d40969",
-      "name": "Schedule Trigger"
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "uKA8k5WPzNvodqZg",
+          "name": "Teste Jussi"
+        }
+      }
     }
   ],
   "pinData": {},
   "connections": {
+    "Gerar Offsets": {
+      "main": [
+        [
+          {
+            "node": "Iterar Produtos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Iterar Produtos": {
+      "main": [
+        [
+          {
+            "node": "Iterar Preços",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Delay Produtos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delay Produtos": {
+      "main": [
+        [
+          {
+            "node": "API Produtos Paginado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "API Produtos Paginado": {
+      "main": [
+        [
+          {
+            "node": "Iterar Produtos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Iterar Preços": {
+      "main": [
+        [
+          {
+            "node": "Baserow2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Delay Preços",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delay Preços": {
+      "main": [
+        [
+          {
+            "node": "API Preços Paginado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "API Preços Paginado": {
+      "main": [
+        [
+          {
+            "node": "Iterar Preços",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Baserow2": {
+      "main": [
+        [
+          {
+            "node": "Combinar Produtos e Preços",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Combinar Produtos e Preços": {
+      "main": [
+        [
+          {
+            "node": "Processar Produtos Individualmente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
     "Processar Produtos Individualmente": {
       "main": [
         [],
@@ -493,71 +675,11 @@
         ]
       ]
     },
-    "Combinar Produtos e Preços": {
-      "main": [
-        [
-          {
-            "node": "Processar Produtos Individualmente",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Aguardar APIs": {
-      "main": [
-        [
-          {
-            "node": "Combinar Produtos e Preços",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Loja Integrada API - Preços": {
-      "main": [
-        [
-          {
-            "node": "Combinar Produtos e Preços",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Loja Integrada API - Produtos": {
-      "main": [
-        [
-          {
-            "node": "Loja Integrada API - Preços",
-            "type": "main",
-            "index": 0
-          },
-          {
-            "node": "Baserow2",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Baserow2": {
-      "main": [
-        [
-          {
-            "node": "Combinar Produtos e Preços",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Schedule Trigger": {
       "main": [
         [
           {
-            "node": "Loja Integrada API - Produtos",
+            "node": "Gerar Offsets",
             "type": "main",
             "index": 0
           }
@@ -567,9 +689,12 @@
   },
   "active": false,
   "settings": {
-    "executionOrder": "v1"
+    "executionOrder": "v1",
+    "timezone": "America/Sao_Paulo",
+    "callerPolicy": "workflowsFromSameOwner",
+    "executionTimeout": -1
   },
-  "versionId": "5a14cfe2-ed17-4ce5-9a65-fbca00a15cd4",
+  "versionId": "892eeee7-f2b1-458c-83d5-7c594dc1c010",
   "meta": {
     "instanceId": "4faefdf3059315485669fe72f46d2b3d3b854f78d714ee73fce79128bb5ebe6d"
   },
