@@ -1,0 +1,25 @@
+{
+  "baserow": {
+    "url": "https://seu-baserow.com",
+    "token": "seu-token-aqui",
+    "tables": {
+      "produtos": {
+        "id": "TABELA_ID_PRODUTOS",
+        "name": "Produtos Loja Integrada"
+      },
+      "base_produtos": {
+        "id": "TABELA_ID_BASE_PRODUTOS",
+        "name": "Base Produtos"
+      },
+      "vector_store": {
+        "id": "TABELA_ID_VECTOR_STORE",
+        "name": "Vector Store"
+      }
+    }
+  },
+  "n8n_variables": {
+    "BASEROW_TABLE_ID": "TABELA_ID_PRODUTOS",
+    "BASEROW_BASE_TABLE_ID": "TABELA_ID_BASE_PRODUTOS",
+    "BASEROW_VECTOR_TABLE_ID": "TABELA_ID_VECTOR_STORE"
+  }
+}

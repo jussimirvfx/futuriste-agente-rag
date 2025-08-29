@@ -1,0 +1,1477 @@
+{
+  "name": "FUTURISTE AGENTE RAG",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -80,
+        32
+      ],
+      "id": "c90ccbe9-c57f-4d07-8f4a-834babce3105",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolName": "info_empresa",
+        "toolDescription": "útil para consultar informações sobre: empresa, troca e devolução, lojista, influenciadores, parcerias etc..",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "topK": 15,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.1,
+      "position": [
+        2656,
+        2416
+      ],
+      "id": "e4814fb2-8912-4364-b66f-3f6290ab4da6",
+      "name": "info_empresa",
+      "credentials": {
+        "supabaseApi": {
+          "id": "mDRmzum0tgclKwyy",
+          "name": "Supabase account Cloudfy"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        2560,
+        2560
+      ],
+      "id": "7e2c7423-e366-4ad4-9cf0-4695c9982e1b",
+      "name": "Embeddings OpenAI1",
+      "credentials": {
+        "openAiApi": {
+          "id": "X3ZJIBHB4LajJSYu",
+          "name": "Futuriste Teste N8N"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "triggerAtHour": 2
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -112,
+        624
+      ],
+      "id": "c1c8ad2d-d91e-4d43-aa0c-28e354ed3562",
+      "name": "Roda 1x semana 02:00"
+    },
+    {
+      "parameters": {
+        "content": "# TESTA RAG",
+        "height": 742,
+        "width": 1358,
+        "color": 3
+      },
+      "id": "08d3fd46-54a2-4322-bcef-f8e0de8dc043",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1632,
+        1936
+      ]
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "útil para consultar preço e url de produto",
+        "operation": "getAll",
+        "tableId": "produtos_pincbar",
+        "returnAll": true
+      },
+      "type": "n8n-nodes-base.supabaseTool",
+      "typeVersion": 1,
+      "position": [
+        2720,
+        2192
+      ],
+      "id": "c687e2a8-a558-4601-b6e1-550193d085c5",
+      "name": "consulta_preco_url",
+      "credentials": {
+        "supabaseApi": {
+          "id": "mDRmzum0tgclKwyy",
+          "name": "Supabase account Cloudfy"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "3ac9c5d7-aebe-48ac-8398-e8173a182a0b",
+              "leftValue": "={{ $json.metadata.id_produto }}",
+              "rightValue": "={{ $('Insere Dado Vecto Store').item.json.metadata.id_produto }}",
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        2144,
+        912
+      ],
+      "id": "30eabe91-ffd1-4a9c-aa24-19f877b85e49",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "operation": "getMany",
+        "databaseId": 267479,
+        "tableId": 657363
+      },
+      "type": "n8n-nodes-base.baserow",
+      "typeVersion": 1,
+      "position": [
+        1920,
+        912
+      ],
+      "id": "e42804b9-8003-4eb1-b9e7-1dd423e8c55b",
+      "name": "Baserow6",
+      "credentials": {
+        "baserowApi": {
+          "id": "6Q6zmxem0cig5L8h",
+          "name": "Baserow account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "databaseId": 267479,
+        "tableId": 657363,
+        "rowId": "={{ $('Filter').item.json.id }}",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "id_produto",
+              "fieldValue": "={{ $json.metadata.id_produto }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.baserow",
+      "typeVersion": 1,
+      "position": [
+        2336,
+        912
+      ],
+      "id": "3d6ffeed-8353-4bf1-9b6d-77f2a1cfb1b6",
+      "name": "Baserow5",
+      "credentials": {
+        "baserowApi": {
+          "id": "6Q6zmxem0cig5L8h",
+          "name": "Baserow account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "update",
+        "tableName": {
+          "__rl": true,
+          "value": "base_produtos_pincbar",
+          "mode": "list",
+          "cachedResultName": "base_produtos_pincbar"
+        },
+        "id": "={{ $('verifica se já existe produto').item.json.id }}",
+        "options": {
+          "queryName": "match_base_produtos_pincbar"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.1,
+      "position": [
+        1904,
+        1408
+      ],
+      "id": "79497fdf-eaae-47de-99be-f054e851071f",
+      "name": "Atualiza Vector Store",
+      "credentials": {
+        "supabaseApi": {
+          "id": "mDRmzum0tgclKwyy",
+          "name": "Supabase account Cloudfy"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1387919c-c9c1-487c-81f6-e6aea342d9cc",
+              "name": "Q&A",
+              "value": "=[DESCRICAO]\n\n{{ $('Monta_Info').item.json.descricao_produto }}\n\n[FAQ]\n\n{{ $('Monta_Info').item.json.faq }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1072,
+        1408
+      ],
+      "id": "da060e91-4615-4583-b949-6e5e4cb23436",
+      "name": "pega_qea_atualiza_prod"
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "tableName": {
+          "__rl": true,
+          "value": "base_produtos_pincbar",
+          "mode": "list",
+          "cachedResultName": "base_produtos_pincbar"
+        },
+        "options": {
+          "queryName": "match_base_produtos_pincbar"
+        }
+      },
+      "id": "12037c26-7225-4723-abd4-9b4faf7e564d",
+      "name": "Insere Dado Vecto Store",
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1,
+      "position": [
+        1456,
+        912
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "mDRmzum0tgclKwyy",
+          "name": "Supabase account Cloudfy"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "55492526-7a7f-4892-8496-d0eba411715e",
+              "name": "Q&A",
+              "value": "=[DESCRICAO]\n\n{{ $('Monta_Info').item.json.descricao_produto }}\n\n[FAQ]\n\n{{ $('Monta_Info').item.json.faq }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "6baa3435-9308-4a87-a153-e34e52bf4af9",
+      "name": "pega_qea",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1120,
+        912
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "6fac2bec-2800-4d23-9d53-1f1c293e1e1f",
+              "leftValue": "={{ $('busca_produto_base').item.json }}",
+              "rightValue": "",
+              "operator": {
+                "type": "object",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        512,
+        1072
+      ],
+      "id": "0e34599b-540d-46c0-9e5b-c5fa5fca7659",
+      "name": "verifica se já existe produto"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "databaseId": 267479,
+        "tableId": 657363,
+        "rowId": "={{ $('Monta_Info').item.json.id }}"
+      },
+      "type": "n8n-nodes-base.baserow",
+      "typeVersion": 1,
+      "position": [
+        2416,
+        624
+      ],
+      "id": "f138acf5-99fb-43e5-8ab0-c9ee351a4c9d",
+      "name": "busca_produto_base",
+      "alwaysOutputData": true,
+      "credentials": {
+        "baserowApi": {
+          "id": "6Q6zmxem0cig5L8h",
+          "name": "Baserow account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "5151a44d-dd2b-444a-98db-f3aa736671d2",
+              "name": "descricao_produto",
+              "value": "={{ $('Monta Informações').item.json.message.content }}",
+              "type": "string"
+            },
+            {
+              "id": "6f31b596-aa73-4457-9997-054295e0d12f",
+              "name": "titulo_produto",
+              "value": "={{ $('Loop Over Items2').item.json.titulo_produto }}",
+              "type": "string"
+            },
+            {
+              "id": "acbf91a1-84c8-4a63-b9d6-c4b2c3dafe38",
+              "name": "id",
+              "value": "={{ $('Loop Over Items2').item.json.id }}",
+              "type": "number"
+            },
+            {
+              "id": "699ddd15-4c79-40a1-9491-e3da8157c060",
+              "name": "faq",
+              "value": "={{ $json.message.content }}",
+              "type": "string"
+            },
+            {
+              "id": "a040d1b6-4dc7-4844-ba75-ea2321a6bca2",
+              "name": "status_produto",
+              "value": "={{ $('Supabase2').item.json.status_produto }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "d8ead028-ccbb-484c-b7ec-12a97d18a7ae",
+      "name": "Monta_Info",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1936,
+        624
+      ]
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini-2024-07-18",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI-2024-07-18"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Você é um modelo avançado de IA especializado em criar conteúdo baseado em dados fornecidos. Receberá informações detalhadas sobre um produto e precisará gerar **5 frases** formatadas de forma clara e organizada, utilizando os dados fornecidos.\n\nCada frase deve incluir informações específicas sobre o título, descrição, URL, status, preço e tipo do produto, seguindo o formato abaixo:\n\n1. O título do produto é {{ $json.titulo_produto }}.  \n2. A descrição do produto é: {{ $json.descricao_produto }}.  \n3. A URL do produto é: {{ $json.url_do_produto }}.  \n4. O status do produto é: {{ $json.status_produto }}.  \n5. O preço do produto é: {{ $json.preco_produto }} podendo ser parcelado em 4x de R$ (calcule) sem juros.  \n6. O tipo do produto é: {{ $json.tipo_produto }}.  \n\n**Instruções adicionais**:\n1. Utilize as informações fornecidas no contexto para criar as frases.  \n2. Certifique-se de que o formato siga exatamente o modelo apresentado.  \n3. Seja direto e específico, sem adicionar perguntas, respostas ou interpretações extras.  \n\nCom base nas seguintes informações: \n- Título: {{ $json.titulo_produto }}  \n- Descrição: {{ $json.descricao_produto }}  \n- URL: {{ $json.url_do_produto }}  \n- Status: {{ $json.status_produto }}  \n- Preço: {{ $json.preco_produto }}  \n- Tipo: {{ $json.tipo_produto }}  \n\nGere as 6 frases no formato especificado.\n\nNão diminua texto nem corte frases. Deixe as informações completas.",
+              "role": "assistant"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "10d9545c-9f8b-47ac-bbef-9fd3b803d7a8",
+      "name": "Monta Informações",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.6,
+      "position": [
+        736,
+        624
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "X3ZJIBHB4LajJSYu",
+          "name": "Futuriste Teste N8N"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini-2024-07-18",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI-2024-07-18"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Você é um modelo avançado de IA especializado em criar conteúdo baseado em dados fornecidos. Receberá informações detalhadas sobre um produto e precisará gerar **30 perguntas e respostas (Q&A)** que clientes possam fazer sobre esse produto.\n\nUse as informações fornecidas para criar perguntas e respostas claras e úteis. Inclua detalhes sobre título e  descrição. As perguntas devem cobrir possíveis dúvidas de clientes sobre o produto e suas características. As respostas devem ser em tom leve, curto, carismático e em algumas respostas utilize emojis.\n\n**Exemplo do formato esperado**:\nQ: pergunta01  \nA: pergunta01\n---\nQ: pergunta02  \nA: pergunta02\n---\nQ: pergunta03 \nA: pergunta03\n\n**Instruções adicionais**:\n1. Use todas as informações fornecidas no contexto.\n2. Certifique-se de que as perguntas sejam diversificadas e úteis para diferentes cenários.\n3. Inclua perguntas sobre as principais características do produto, seus benefícios e como usá-lo.\n\nAgora, gere as 30 perguntas e respostas com base nas seguintes informações:\n- Título: {{ $('Loop Over Items2').item.json.titulo_produto }}\n- Descrição: {{ $('Loop Over Items2').item.json.descricao_produto }}\n\n\nSua resposta somente deve ser a pergunta e a resposta.",
+              "role": "assistant"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "9a235e74-eb26-4850-b52f-3cd9af4bac98",
+      "name": "Monta FAQ",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.6,
+      "position": [
+        1424,
+        624
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "X3ZJIBHB4LajJSYu",
+          "name": "Futuriste Teste N8N"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolName": "consulta_produtos",
+        "toolDescription": "Útil para consulta de informações sobre produtos (exceto lista de produtos, preços e url)",
+        "tableName": {
+          "__rl": true,
+          "value": "base_produtos_pincbar",
+          "mode": "list",
+          "cachedResultName": "base_produtos_pincbar"
+        },
+        "topK": 15,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.1,
+      "position": [
+        2336,
+        2288
+      ],
+      "id": "9d6938f7-d56e-4ca4-8e3c-473a47bce244",
+      "name": "consulta_produtos",
+      "credentials": {
+        "supabaseApi": {
+          "id": "mDRmzum0tgclKwyy",
+          "name": "Supabase account Cloudfy"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        2304,
+        2496
+      ],
+      "id": "295e9ce3-3b05-4889-b6bf-e62e15646ef2",
+      "name": "Embeddings OpenAI4",
+      "credentials": {
+        "openAiApi": {
+          "id": "X3ZJIBHB4LajJSYu",
+          "name": "Futuriste Teste N8N"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        2144,
+        2272
+      ],
+      "id": "9f3b76c8-fd74-4304-be6f-3c1ab4b70469",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1984,
+        2288
+      ],
+      "id": "38a0797b-91c8-49f5-8b02-03d69c0899bf",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "X3ZJIBHB4LajJSYu",
+          "name": "Futuriste Teste N8N"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "=Você é um agente de ia chamado pincsuporte que faz o atendimento do e-commerce da pincbar para clientes.\n\nutilize a tool \"consulta_produtos\" para ver informações sobre produtos (exceto lista de produtos preço e url)\nutilize a tool \"consulta_url_preco\" para ver preço, lista de produtos e url de produtos\nutilize a tool \"info_empresa\" para ver informações sobre a empresa, troca e devolução, parcerias, lojistas, influenciadores etc.\n\nResponda de uma maneira divertida, leve, simpática, discontraida com emojis e que não passe 400 caracteres."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        2112,
+        2096
+      ],
+      "id": "e4438cfd-3d6a-467c-92ba-5ea3f16aaa57",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1776,
+        1568
+      ],
+      "id": "e135ca64-fd7d-485b-856d-a0f3b599daea",
+      "name": "Embeddings OpenAI3",
+      "credentials": {
+        "openAiApi": {
+          "id": "X3ZJIBHB4LajJSYu",
+          "name": "Futuriste Teste N8N"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "# ATUALIZA BASE DE PRODUTOS",
+        "height": 510,
+        "width": 3047,
+        "color": 4
+      },
+      "id": "bc7de728-3bb8-4db4-b854-8a5b604dd8c2",
+      "name": "Sticky Note3",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -208,
+        -112
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "7c26012d-dd77-4e75-a5f5-c5b1a8f83f99",
+      "name": "Processar Produtos Individualmente",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1488,
+        32
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "6c7fef20-3574-4777-8369-ba1f3dea7926",
+      "name": "Switch - Create vs Update",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 1,
+      "position": [
+        1744,
+        48
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "databaseId": 267479,
+        "tableId": 657363,
+        "rowId": "={{ $json.id_baserow }}",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": 5391438,
+              "fieldValue": "={{ $json.nome }}"
+            },
+            {
+              "fieldId": 5391439,
+              "fieldValue": "={{ $json.titulo_produto }}"
+            },
+            {
+              "fieldId": 5391440,
+              "fieldValue": "={{ $json.apelido }}"
+            },
+            {
+              "fieldId": 5391441,
+              "fieldValue": "={{ $json.sku }}"
+            },
+            {
+              "fieldId": 5391442,
+              "fieldValue": "={{ $json.descricao_produto }}"
+            },
+            {
+              "fieldId": 5391443,
+              "fieldValue": "={{ $json.descricao_produto }}"
+            },
+            {
+              "fieldId": 5391444,
+              "fieldValue": "={{ $json.url_produto }}"
+            },
+            {
+              "fieldId": 5391445,
+              "fieldValue": "={{ $json.url_video_youtube }}"
+            },
+            {
+              "fieldId": 5391450,
+              "fieldValue": "={{ $json.ativo }}"
+            },
+            {
+              "fieldId": 5391451,
+              "fieldValue": "={{ $json.bloqueado }}"
+            },
+            {
+              "fieldId": 5391452,
+              "fieldValue": "={{ $json.removido }}"
+            },
+            {
+              "fieldId": 5391453,
+              "fieldValue": "={{ $json.tipo }}"
+            },
+            {
+              "fieldId": 5391454,
+              "fieldValue": "={{ $json.preco_cheio }}"
+            },
+            {
+              "fieldId": 5391455,
+              "fieldValue": "={{ $json.preco_promocional }}"
+            },
+            {
+              "fieldId": 5391456,
+              "fieldValue": "={{ $json.preco_custo }}"
+            },
+            {
+              "fieldId": 5391457,
+              "fieldValue": "={{ $json.sob_consulta }}"
+            },
+            {
+              "fieldId": 5391458,
+              "fieldValue": "={{ $json.data_sincronizacao }}"
+            },
+            {
+              "fieldId": 5391459,
+              "fieldValue": "={{ $json.fonte }}"
+            }
+          ]
+        }
+      },
+      "id": "d841bbe0-4cde-4a21-b963-bccab38c480e",
+      "name": "Baserow - UPDATE",
+      "type": "n8n-nodes-base.baserow",
+      "typeVersion": 1,
+      "position": [
+        2048,
+        192
+      ],
+      "alwaysOutputData": true,
+      "credentials": {
+        "baserowApi": {
+          "id": "6Q6zmxem0cig5L8h",
+          "name": "Baserow account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "databaseId": 267479,
+        "tableId": 657363,
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": 5391437,
+              "fieldValue": "={{ $('Combinar Produtos e Preços').item.json.id_produto_loja_integrada }}"
+            },
+            {
+              "fieldId": 5391438,
+              "fieldValue": "={{ $('Combinar Produtos e Preços').item.json.nome }}"
+            },
+            {
+              "fieldId": 5391439,
+              "fieldValue": "={{ $('Combinar Produtos e Preços').item.json.titulo_produto }}"
+            },
+            {
+              "fieldId": 5391440,
+              "fieldValue": "={{ $('Combinar Produtos e Preços').item.json.apelido }}"
+            },
+            {
+              "fieldId": 5391442,
+              "fieldValue": "={{ $('Combinar Produtos e Preços').item.json.descricao_produto }}"
+            },
+            {
+              "fieldId": 5391443,
+              "fieldValue": "={{ $('Combinar Produtos e Preços').item.json.descricao_produto }}"
+            },
+            {
+              "fieldId": 5391444,
+              "fieldValue": "={{ $('Combinar Produtos e Preços').item.json.url_produto }}"
+            },
+            {
+              "fieldId": 5391445,
+              "fieldValue": "={{ $('Combinar Produtos e Preços').item.json.url_video_youtube }}"
+            },
+            {
+              "fieldId": 5391450,
+              "fieldValue": "={{ $('Combinar Produtos e Preços').item.json.ativo }}"
+            },
+            {
+              "fieldId": 5391451,
+              "fieldValue": "={{ $('Combinar Produtos e Preços').item.json.bloqueado }}"
+            },
+            {
+              "fieldId": 5391452,
+              "fieldValue": "={{ $('Combinar Produtos e Preços').item.json.removido }}"
+            },
+            {
+              "fieldId": 5391453,
+              "fieldValue": "={{ $('Combinar Produtos e Preços').item.json.tipo }}"
+            },
+            {
+              "fieldId": 5391454,
+              "fieldValue": "={{ $('Combinar Produtos e Preços').item.json.preco_cheio }}"
+            },
+            {
+              "fieldId": 5391455,
+              "fieldValue": "={{ $('Combinar Produtos e Preços').item.json.preco_promocional }}"
+            },
+            {
+              "fieldId": 5391456,
+              "fieldValue": "={{ $('Combinar Produtos e Preços').item.json.preco_custo }}"
+            },
+            {
+              "fieldId": 5391457,
+              "fieldValue": "={{ $('Combinar Produtos e Preços').item.json.sob_consulta }}"
+            },
+            {
+              "fieldId": 5391458,
+              "fieldValue": "={{ $('Combinar Produtos e Preços').item.json.data_sincronizacao }}"
+            },
+            {
+              "fieldId": 5391459,
+              "fieldValue": "={{ $json.fonte }}"
+            }
+          ]
+        }
+      },
+      "id": "da1bf5f2-d01c-4bb0-9007-6d08a4600119",
+      "name": "Baserow - CREATE",
+      "type": "n8n-nodes-base.baserow",
+      "typeVersion": 1,
+      "position": [
+        2048,
+        0
+      ],
+      "alwaysOutputData": true,
+      "credentials": {
+        "baserowApi": {
+          "id": "6Q6zmxem0cig5L8h",
+          "name": "Baserow account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Combinar dados de produtos e preços com SINCRONIZAÇÃO\n// Lógica: usar preços como referência e sincronizar com Baserow\nconsole.log('🔍 DEBUG - Iniciando sincronização com Baserow');\n\nlet produtos = [];\nlet precos = [];\nlet produtosComPreco = [];\nlet produtosExistentes = [];\n\ntry {\n  // PRIMEIRO: Acessar dados da API de Preços (nosso ponto de referência)\n  const dadosPrecos = $('Loja Integrada API - Preços').first().json.objects;\n  if (dadosPrecos && dadosPrecos.length > 0) {\n    console.log('💰 Preços encontrados:', dadosPrecos.length, 'itens');\n    precos = dadosPrecos;\n\n    // Extrair IDs dos produtos que têm preço\n    const idsProdutosComPreco = precos\n      .filter(preco => preco.cheio && parseFloat(preco.cheio) > 0)\n      .map(preco => {\n        const produtoUrl = preco.produto || '';\n        const produtoId = produtoUrl.split('/').pop();\n        return produtoId;\n      })\n      .filter(id => id); // Remove IDs vazios\n\n    console.log('🎯 Produtos com preço válido encontrados:', idsProdutosComPreco.length);\n    console.log('📋 IDs dos produtos com preço:', idsProdutosComPreco);\n\n    // SEGUNDO: Acessar dados da API de Produtos e filtrar apenas os que têm preço\n    const dadosProdutos = $('Loja Integrada API - Produtos').first().json.objects;\n    if (dadosProdutos && dadosProdutos.length > 0) {\n      console.log('📦 Produtos totais da API:', dadosProdutos.length, 'itens');\n\n      // Filtrar apenas produtos que têm preço\n      produtosComPreco = dadosProdutos.filter(produto => {\n        const produtoTemPreco = idsProdutosComPreco.includes(produto.id?.toString());\n        if (!produtoTemPreco) {\n          console.log(`⚠️ Produto ${produto.nome} (ID: ${produto.id}) não tem preço - IGNORADO`);\n        }\n        return produtoTemPreco;\n      });\n\n      console.log('✅ Produtos filtrados com preço:', produtosComPreco.length);\n      produtos = produtosComPreco;\n    } else {\n      console.log('⚠️ Nenhum produto encontrado na API de produtos');\n    }\n  } else {\n    console.log('⚠️ Nenhum preço encontrado - não há produtos para processar');\n  }\n\n  // TERCEIRO: Verificar produtos existentes no Baserow para sincronização\n  try {\n    const baserowProdutos = $('Baserow2').first().json;\n    if (baserowProdutos && Array.isArray(baserowProdutos)) {\n      produtosExistentes = baserowProdutos;\n      console.log('📊 Produtos existentes no Baserow:', produtosExistentes.length);\n    } else {\n      console.log('📊 Nenhum produto encontrado no Baserow');\n    }\n  } catch (error) {\n    console.log('⚠️ Erro ao acessar produtos do Baserow:', error.message);\n    console.log('📊 Considerando que não há produtos existentes');\n  }\n\n} catch (error) {\n  console.log('❌ Erro ao acessar dados das APIs:', error.message);\n}\n\nconsole.log('✅ Produtos encontrados:', produtos.length);\nconsole.log('✅ Preços encontrados:', precos.length);\nconsole.log('📋 Lista de produtos:', produtos);\nconsole.log('💵 Lista de preços:', precos);\nconsole.log('🗄️ Produtos existentes no Baserow:', produtosExistentes.length);\n\n// Função para limpar HTML\nfunction limparHtml(html) {\n  if (!html || typeof html !== 'string') {\n    return '';\n  }\n  \n  // Remove todas as tags HTML\n  let textoLimpo = html.replace(/<[^>]*>/g, '');\n  \n  // Remove entidades HTML\n  textoLimpo = textoLimpo.replace(/&[^;]+;/g, ' ');\n  \n  // Remove espaços extras e quebras de linha\n  textoLimpo = textoLimpo.replace(/\\s+/g, ' ').trim();\n  \n  return textoLimpo;\n}\n\n// Função para formatar preço\nfunction formatarPreco(valor) {\n  if (!valor) return 'R$ 0,00';\n\n  const numero = parseFloat(valor);\n  if (isNaN(numero)) return 'R$ 0,00';\n\n  // Formatar como moeda brasileira\n  return new Intl.NumberFormat('pt-BR', {\n    style: 'currency',\n    currency: 'BRL'\n  }).format(numero);\n}\n\n// Função para encontrar preço do produto\nfunction encontrarPreco(produtoId, listaPrecos) {\n  console.log('🔍 Procurando preço para produto ID:', produtoId);\n  console.log('📋 Lista de preços disponível:', listaPrecos?.length || 0);\n\n  if (!produtoId || !listaPrecos || listaPrecos.length === 0) {\n    console.log('❌ Parâmetros inválidos ou lista vazia');\n    return null;\n  }\n\n  const produtoIdStr = produtoId.toString();\n  console.log('🔄 Procurando por ID string:', produtoIdStr);\n\n  const precoEncontrado = listaPrecos.find(preco => {\n    // Verificar se o preço tem referência ao produto\n    const precoProdutoUrl = preco.produto || '';\n    console.log('Preço atual - URL produto:', precoProdutoUrl);\n\n    const precoProdutoId = precoProdutoUrl.split('/').pop();\n    console.log('Preço atual - ID extraído:', precoProdutoId);\n\n    const match = precoProdutoId === produtoIdStr;\n    console.log('Comparação:', precoProdutoId, '===', produtoIdStr, '=', match);\n\n    return match;\n  });\n\n  console.log('Resultado da busca:', precoEncontrado ? 'Encontrado' : 'Não encontrado');\n  return precoEncontrado;\n}\n\n// SINCRONIZAÇÃO: Comparar produtos da API com Baserow\nconsole.log('🔄 Iniciando sincronização...');\n\n// Criar mapa de produtos existentes no Baserow por ID\nconst mapaProdutosBaserow = new Map();\nprodutosExistentes.forEach(produto => {\n  if (produto.id_produto_loja_integrada) {\n    mapaProdutosBaserow.set(produto.id_produto_loja_integrada.toString(), produto);\n  }\n});\n\nconsole.log('🗂️ Mapa de produtos Baserow criado com', mapaProdutosBaserow.size, 'itens');\n\n// Preparar produtos para sincronização\nconst produtosParaSincronizar = [];\nlet produtosParaCreate = 0;\nlet produtosParaUpdate = 0;\n\n// Processar cada produto da API\nprodutos.forEach((produto, index) => {\n  console.log(`📦 Processando produto ${index + 1}/${produtos.length}:`, produto.nome, 'ID:', produto.id);\n\n  // Encontrar preço correspondente\n  const precoCorrespondente = encontrarPreco(produto.id, precos);\n  console.log(`💰 Preço encontrado para ${produto.nome}:`, precoCorrespondente ? 'SIM' : 'NÃO');\n\n  // Preparar dados do produto\n  const produtoFinal = {\n    // Dados do produto\n    id_produto_loja_integrada: produto.id,\n    nome: produto.nome,\n    titulo_produto: produto.nome,\n    apelido: produto.apelido,\n    sku: produto.sku,\n    descricao_completa: produto.descricao_completa,\n    descricao_produto: limparHtml(produto.descricao_completa), // HTML limpo\n    url_produto: produto.url || '',\n    url_video_youtube: produto.url_video_youtube || '',\n    gtin: produto.gtin || '',\n    mpn: produto.mpn || '',\n    ncm: produto.ncm || '',\n    id_externo: produto.id_externo || '',\n    ativo: produto.ativo,\n    bloqueado: produto.bloqueado,\n    removido: produto.removido,\n    tipo: produto.tipo || 'produto',\n\n    // Dados de preço (se encontrado)\n    preco_cheio: precoCorrespondente ? formatarPreco(precoCorrespondente.cheio) : 'R$ 0,00',\n    preco_promocional: precoCorrespondente && precoCorrespondente.promocional ? formatarPreco(precoCorrespondente.promocional) : null,\n    preco_custo: precoCorrespondente && precoCorrespondente.custo ? formatarPreco(precoCorrespondente.custo) : null,\n    sob_consulta: precoCorrespondente ? precoCorrespondente.sob_consulta : false,\n\n    // Metadados\n    data_sincronizacao: new Date().toISOString(),\n    fonte: 'loja_integrada'\n  };\n\n  // Verificar se produto já existe no Baserow\n  const produtoExistente = mapaProdutosBaserow.get(produto.id?.toString());\n\n  if (produtoExistente) {\n    // Produto existe - precisa de UPDATE\n    produtoFinal.acao = 'update';\n    produtoFinal.id_baserow = produtoExistente.id; // ID do registro no Baserow\n    produtosParaUpdate++;\n    console.log(`🔄 Produto ${produto.nome} - UPDATE (ID Baserow: ${produtoExistente.id})`);\n  } else {\n    // Produto não existe - precisa de CREATE\n    produtoFinal.acao = 'create';\n    produtosParaCreate++;\n    console.log(`➕ Produto ${produto.nome} - CREATE`);\n  }\n\n  produtosParaSincronizar.push(produtoFinal);\n});\n\nconsole.log('🎯 Sincronização preparada:');\nconsole.log('- Produtos para CREATE:', produtosParaCreate);\nconsole.log('- Produtos para UPDATE:', produtosParaUpdate);\nconsole.log('- Total para sincronizar:', produtosParaSincronizar.length);\n\nconsole.log('📊 Resumo geral:');\nconsole.log('- Produtos da API com preço:', produtos.length);\nconsole.log('- Preços encontrados:', precos.length);\nconsole.log('- Produtos existentes no Baserow:', produtosExistentes.length);\nconsole.log('- Produtos para CREATE:', produtosParaCreate);\nconsole.log('- Produtos para UPDATE:', produtosParaUpdate);\n\nconsole.log('📋 Primeiro produto para sincronizar:', produtosParaSincronizar[0]);\n\nreturn produtosParaSincronizar;"
+      },
+      "id": "f18dbdd1-23e0-4f89-a96d-06f690440e51",
+      "name": "Combinar Produtos e Preços",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1168,
+        16
+      ]
+    },
+    {
+      "parameters": {
+        "unit": "seconds"
+      },
+      "id": "c2103c5a-e982-4536-8654-f1611adf6f80",
+      "name": "Aguardar APIs",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [
+        896,
+        32
+      ],
+      "webhookId": "875ad9ee-9385-4d17-8ed6-17927b216ced"
+    },
+    {
+      "parameters": {
+        "url": "https://api.awsli.com.br/v1/produto_preco",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "limit",
+              "value": "100"
+            },
+            {
+              "name": "offset",
+              "value": "0"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "chave_api 7b9d04db65e45dcbf8c3 aplicacao fc665b96-2434-4c05-92d1-91a595612d61"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "ab091653-2dc9-41e2-8c06-4b757fd1e08a",
+      "name": "Loja Integrada API - Preços",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        448,
+        32
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "uKA8k5WPzNvodqZg",
+          "name": "Teste Jussi"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://api.awsli.com.br/v1/produto",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "limit",
+              "value": "100"
+            },
+            {
+              "name": "offset",
+              "value": "0"
+            },
+            {
+              "name": "description_html",
+              "value": "1"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "chave_api 7b9d04db65e45dcbf8c3 aplicacao fc665b96-2434-4c05-92d1-91a595612d61"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "221aa496-4871-4618-886c-bff8c0fe7e8b",
+      "name": "Loja Integrada API - Produtos",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        176,
+        32
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "uKA8k5WPzNvodqZg",
+          "name": "Teste Jussi"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "# MONTA FAQ\n",
+        "height": 1382,
+        "width": 3058
+      },
+      "id": "55d16cef-f953-47b6-ba64-49b550111e12",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -208,
+        496
+      ]
+    },
+    {
+      "parameters": {
+        "chunkSize": 8000
+      },
+      "id": "f88da1ab-8bfa-4775-a5fe-ece4e3ae7c25",
+      "name": "Character Text Splitter2",
+      "type": "@n8n/n8n-nodes-langchain.textSplitterCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        1584,
+        1248
+      ]
+    },
+    {
+      "parameters": {
+        "options": {
+          "metadata": {
+            "metadataValues": [
+              {
+                "name": "=id_produto",
+                "value": "={{ $('Monta_Info').item.json.id }}"
+              },
+              {
+                "name": "=titulo_produto",
+                "value": "={{ $('Monta_Info').item.json.titulo_produto }}"
+              },
+              {
+                "name": "status_produto",
+                "value": "={{ $('Monta_Info').item.json.status_produto }}"
+              }
+            ]
+          }
+        }
+      },
+      "id": "a076ff31-5ecd-4766-a20d-4097b4fd5fb2",
+      "name": "Default Data Loader2",
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1,
+      "position": [
+        1616,
+        1104
+      ]
+    },
+    {
+      "parameters": {
+        "model": "text-embedding-3-small",
+        "options": {}
+      },
+      "id": "71cdc94e-49cf-438a-82e8-896b450e3db3",
+      "name": "Embeddings OpenAI2",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1,
+      "position": [
+        1376,
+        1136
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "X3ZJIBHB4LajJSYu",
+          "name": "Futuriste Teste N8N"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "id": "01d93656-3bfd-477b-980b-ea80617946e1",
+      "name": "Replace Me2",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        2624,
+        1568
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "bab717cd-897a-4f0f-944c-f64e6642fc3e",
+      "name": "Loop Over Items2",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        416,
+        608
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "getMany",
+        "databaseId": 267479,
+        "tableId": 657363
+      },
+      "id": "fb8a64e6-d8ed-4952-9a85-d0c681a212e1",
+      "name": "Baserow2",
+      "type": "n8n-nodes-base.baserow",
+      "typeVersion": 1,
+      "position": [
+        192,
+        608
+      ],
+      "credentials": {
+        "baserowApi": {
+          "id": "6Q6zmxem0cig5L8h",
+          "name": "Baserow account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Embeddings OpenAI1": {
+      "ai_embedding": [
+        [
+          {
+            "node": "info_empresa",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Baserow6": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Baserow5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "pega_qea_atualiza_prod": {
+      "main": [
+        [
+          {
+            "node": "Atualiza Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insere Dado Vecto Store": {
+      "main": [
+        [
+          {
+            "node": "Baserow6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "pega_qea": {
+      "main": [
+        [
+          {
+            "node": "Insere Dado Vecto Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "verifica se já existe produto": {
+      "main": [
+        [
+          {
+            "node": "pega_qea",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "pega_qea_atualiza_prod",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "busca_produto_base": {
+      "main": [
+        [
+          {
+            "node": "verifica se já existe produto",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Monta_Info": {
+      "main": [
+        [
+          {
+            "node": "busca_produto_base",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Monta Informações": {
+      "main": [
+        [
+          {
+            "node": "Monta FAQ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Monta FAQ": {
+      "main": [
+        [
+          {
+            "node": "Monta_Info",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI4": {
+      "ai_embedding": [
+        [
+          {
+            "node": "consulta_produtos",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "info_empresa": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "consulta_preco_url": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "consulta_produtos": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI3": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Atualiza Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Loja Integrada API - Produtos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Processar Produtos Individualmente": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Switch - Create vs Update",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch - Create vs Update": {
+      "main": [
+        [
+          {
+            "node": "Baserow - CREATE",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Baserow - UPDATE",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Combinar Produtos e Preços": {
+      "main": [
+        [
+          {
+            "node": "Processar Produtos Individualmente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aguardar APIs": {
+      "main": [
+        [
+          {
+            "node": "Combinar Produtos e Preços",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loja Integrada API - Preços": {
+      "main": [
+        [
+          {
+            "node": "Aguardar APIs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loja Integrada API - Produtos": {
+      "main": [
+        [
+          {
+            "node": "Loja Integrada API - Preços",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Character Text Splitter2": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Default Data Loader2",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader2": {
+      "ai_document": [
+        [
+          {
+            "node": "Insere Dado Vecto Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI2": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Insere Dado Vecto Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Atualiza Vector Store": {
+      "main": [
+        [
+          {
+            "node": "Replace Me2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Roda 1x semana 02:00": {
+      "main": [
+        [
+          {
+            "node": "Baserow2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Replace Me2": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items2": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Monta Informações",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Baserow2": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "b3eb0907-4abe-4661-a00a-8758824b2d19",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "4faefdf3059315485669fe72f46d2b3d3b854f78d714ee73fce79128bb5ebe6d"
+  },
+  "id": "9GphnVCeXBVHlcgG",
+  "tags": []
+}

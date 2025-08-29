@@ -1,0 +1,27 @@
+{
+  "produtos_pincbar": {
+    "id_produto_loja_integrada": "ID Produto Loja Integrada",
+    "nome": "Nome",
+    "titulo_produto": "Título Produto",
+    "apelido": "Apelido",
+    "sku": "SKU",
+    "descricao_completa": "Descrição Completa",
+    "descricao_produto": "Descrição Produto",
+    "url_produto": "URL Produto",
+    "url_video_youtube": "URL Video YouTube",
+    "gtin": "GTIN",
+    "mpn": "MPN",
+    "ncm": "NCM",
+    "id_externo": "ID Externo",
+    "ativo": "Ativo",
+    "bloqueado": "Bloqueado",
+    "removido": "Removido",
+    "tipo": "Tipo",
+    "preco_cheio": "Preço Cheio",
+    "preco_promocional": "Preço Promocional",
+    "preco_custo": "Preço Custo",
+    "sob_consulta": "Sob Consulta",
+    "data_sincronizacao": "Data Sincronização",
+    "fonte": "Fonte"
+  }
+}
